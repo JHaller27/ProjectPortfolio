@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>D&amp;D Point Build Tool</title>
+	
+	<script src="../lib/angular.js"></script>
+	<script src="../globals/scripts.js"></script>
+	<script src="./EventManager.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="../globals/styles.css">
+	<link rel="stylesheet" type="text/css" href="./EventManager.css">
+</head>
+
+<body ng-app="eventManagerApp" ng-controller="ctrl">
+	
+	<div class="superContainer">
+		<div id="scheduler" class="container">
+			<h1>RPG Event Manager</h1>
+			<h2>Scheduler</h2>
+			<span class="button" ng-click="seeOptions = !seeOptions">See options</span>
+			<div ng-show="seeOptions">
+				Save Mode <span ng-show="saveMode">On</span><span ng-hide="saveMode">Off</span>
+				<span class="button" ng-click="saveMode = !saveMode">Toggle Save Mode</span>
+			</div>
+			
+			<div class="overflow eventPane">
+				<div class="eventBox" ng-repeat="e in events">
+					<b>{{e.name}}</b>
+					<div class="multibuttonContainer" ng-show="seeOptions">
+						<span class="button load" ng-click="e.editMode = !e.editMode">Edit</span>
+						<span class="button remove" ng-click="RemoveEvent($index)">Remove</span>
+					</div>
+					<div class="editBox" ng-show="seeOptions && e.editMode">
+						<input ng-model="e.name" type="text" placeholder="Name">
+						<input ng-model="e.repetition" type="number" min=0 max=9999 placeholder="Rep">
+						<input ng-model="e.offset" type="number" min=0 max=9999 placeholder="Offset">
+					</div>
+					
+					<br/>
+					
+					Repeat every <b>{{e.repetition}}</b> days<br/>
+					<span ng-hide="e.offset == 0 || e.offset === null">Offset by <b>{{e.offset}}</b> days</span>
+				</div>
+				
+				<div id="input">
+					<input ng-model="input.name" type="text" placeholder="Name">
+					<input ng-model="input.repetition" type="number" min=0 max=9999 placeholder="Rep">
+					<input ng-model="input.offset" type="number" min=0 max=9999 placeholder="Offset">
+					<span class="button add" ng-click="AddEvent()">Add Event</span>
+				</div>
+			</div>
+		</div>
+		
+		<div id="events" class="container">
+			<h2>Day {{day}} - Events</h2>
+			<div id="dayControls" class="multibuttonContainer">
+				<span class="button remove" ng-click="UpdateDay(-1)">Yesterday</span>
+				<span class="button" ng-click="SetDay()">Choose Day</span>
+				<span class="button load" ng-click="UpdateDay(+1)">Tomorrow</span>
+			</div>
+			
+			<div class="overflow eventPane">
+				<div class="eventBox" ng-repeat="e in todaysEvents">
+					<b>{{e.name}}</b>
+					<br/>
+					Repeat every <b>{{e.repetition}}</b> days<br/>
+					<span ng-hide="e.offset == 0 || e.offset === null">Offset by <b>{{e.offset}}</b> days</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+
+</html>

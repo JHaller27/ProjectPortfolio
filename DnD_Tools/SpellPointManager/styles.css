@@ -1,0 +1,53 @@
+body {
+	background-color: black;
+	color: white;
+}
+
+#spellSlotTable {
+	text-align: center;
+}
+#spellSlotTable .tableTitle{
+	font-size: 24pt;
+}
+#spellSlotTable .columnHeading {
+	width: 50px;
+	color: #f55;
+}
+#spellSlotTable .rowHeading {
+	color: #f55;
+}
+
+#classLevelTable {
+	text-align: center;
+	width:100%;
+	padding-left:50px;
+	padding-right:50px;
+}
+
+.clicky {
+	cursor: pointer;
+	background-color: #f55;
+}
+#classLevelTable div.add {
+	border-radius: 5px 5px 0px 0px;
+}
+#classLevelTable div.read {
+	border-right: 2px solid #f55;
+	border-left: 2px solid #f55;
+}
+#classLevelTable div.subtract {
+	border-radius: 0px 0px 5px 5px;
+}
+.reset {
+	margin-top: 5px;
+	padding: 2px;
+	border-radius: 5px;
+	text-align:center;
+}
+.cast {
+	border-radius: 5px;
+}
+
+.label {
+	color: #55f;
+}

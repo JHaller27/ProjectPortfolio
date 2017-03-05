@@ -1,0 +1,21 @@
+.eventPane {
+	margin-top: 20px;
+}
+
+.eventBox {
+	background-color: #005;
+	border: 2px solid blue;
+	border-radius: 50px;
+	
+	padding: 25px;
+	margin-bottom: 20px;
+}
+
+.editBox {
+	background-color: #555;
+    border-radius: 10px;
+    padding-left: 10px;
+}
+.editBox input {
+	border:none;
+}

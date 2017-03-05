@@ -1,0 +1,22 @@
+span, input {
+	text-align:center;
+}
+tr:nth-child(odd) input {
+	border-color:#444;
+}
+tr:nth-child(even) input {
+	border-color:#282828;
+}
+
+table {
+	width:100%;
+	height:100%;
+	font-size:18pt;
+}
+.pointsSpent {
+	display:inline-flex;
+	flex-flow:row nowrap;
+	align-items:center;
+	
+	height:100%;
+}

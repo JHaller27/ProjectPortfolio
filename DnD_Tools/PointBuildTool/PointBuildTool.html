@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>D&amp;D Point Build Tool</title>
+	
+	<script src="../lib/angular.js"></script>
+	<script src="../globals/scripts.js"></script>
+	<script src="./PointBuildTool.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="../globals/styles.css">
+	<link rel="stylesheet" type="text/css" href="./PointBuildTool.css">
+</head>
+
+<body ng-app="myApp" ng-controller="myCtrl">
+	
+	<div class="superContainer">
+		<div class="container overflow">
+			<h1>D&amp;D Point Build Tool</h1>
+			<h2>Points</h2>
+			<h3>Maximum points: {{maxPoints}}</h3>
+			<div class="multibuttonContainer">
+				<span class="button add" ng-click="IncreaseMaxPoints(9)">+9</span>
+				<span class="button add" ng-click="IncreaseMaxPoints(1)">+</span>
+				<span class="button" ng-click="maxPoints = 27">Default</span>
+				<span class="button remove" ng-click="IncreaseMaxPoints(-1)">-</span>
+				<span class="button remove" ng-click="IncreaseMaxPoints(-9)">-9</span>
+			</div>
+			<h3>Points remaining: {{GetPointsRemaining()}}</h3>
+			
+			<span class="button remove" ng-click="Clear()">Reset</span>
+			
+			<h2>Races</h2>
+			<div>
+				<span class="button load" ng-repeat="r in races" ng-click="SelectRace(r)">{{r.name}}</span>
+			</div>
+		</div>
+		<div class="container overflow" style="flex:2 2 0; flex-flow:row wrap;">
+			<table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Base</th>
+						<th>Race</th>
+						<th>Ability</th>
+						<th>Points Spent</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="a in abilities">
+						<td>{{a.name}}</td>
+						<td>{{a.GetAbilityScore()}}</td>
+						<td>{{selectedRace.GetModifier(a.name)}}</td>
+						<td>{{GetAbilityScore(a)}} ({{GetModifier(a)}})</td>
+						<td	class="pointsSpent">
+							{{a.pointsSpent}}
+							<div class="multibuttonContainer vertical">
+								<span class="button add" ng-click="a.IncreaseAbilityScore(1, GetPointsRemaining());">&nbsp;&nbsp;+&nbsp;&nbsp;</span>
+								<span class="button remove" ng-click="a.IncreaseAbilityScore(-1, GetPointsRemaining());">&nbsp;&nbsp;-&nbsp;&nbsp;</span>
+							</div>
+							<div class="multibuttonContainer vertical">
+								<span class="button add" ng-click="a.SetAbilityScore(15, GetPointsRemaining());">Max</span>
+								<span class="button remove" ng-click="a.SetAbilityScore(8, GetPointsRemaining());">Min</span>
+							</div>
+							Cost: {{a.GetCostToIncrease()}}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+
+</html>

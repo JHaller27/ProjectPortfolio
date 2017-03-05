@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Encounter Generator</title>
+	
+	<script src="../lib/angular.js"></script>
+	<script src="../globals/scripts.js"></script>
+	<script src="./MonsterList.js"></script>
+	<script src="./Encounter.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="../globals/styles.css">
+	<link rel="stylesheet" type="text/css" href="./Encounter.css">
+</head>
+
+<body ng-app="encounterApp" ng-controller="ctrl" class="superContainer">
+
+	<div class="container" ng-style="getExpandedStyle()">
+		<div class="collapsed">
+			<h1>Encounter Generator</h1>
+			<h2>Filters</h2>
+			
+			<label>Name</label>
+			<input type="text" ng-model="search.name" placeholder="Filter by name">
+			<br/>
+			
+			<label>Size</label>
+			<select ng-model="search.size">
+				<option value="" selected>None</option>
+				<option value="Tiny" selected>Tiny</option>
+				<option value="Small" selected>Small</option>
+				<option value="Medium" selected>Medium</option>
+				<option value="Large" selected>Large</option>
+				<option value="Huge" selected>Huge</option>
+				<option value="Gargantuan" selected>Gargantuan</option>
+			</select>
+			<br />
+
+			<label>Type</label>
+			<select ng-model="search.type">
+				<option value="" selected>None</option>
+				<option ng-repeat="t in typeList | orderBy">{{t}}</option>
+			</select>
+			<br />
+			
+			<label>Tags</label>
+			<select ng-model="tagInput">
+				<option value="" selected>None</option>
+				<option ng-repeat="t in GetTagList(search.type) | orderBy">{{t}}</option>
+			</select>
+			<br />
+			
+			<label>Alignment</label>
+			<form action="">
+				<input type="checkbox" ng-model="alignment.ethics.lawful"> Lawful
+				<input type="checkbox" ng-model="alignment.morals.good"> Good
+				<br />
+				<input type="checkbox" ng-model="alignment.ethics.neutral"> Neutral
+				<input type="checkbox" ng-model="alignment.morals.neutral"> Neutral
+				<br />
+				<input type="checkbox" ng-model="alignment.ethics.chaotic"> Chaotic
+				<input type="checkbox" ng-model="alignment.morals.evil"> Evil
+				<br />
+				<input type="checkbox" ng-model="alignment.allowUnaligned"> Allow Unaligned?
+			</form>
+			<hr/>
+
+			<span><label>View</label> <input type="checkbox" ng-model="masterListView"> Expanded</span>
+		</div>
+		
+		<div class="collapsed overflow" ng-hide="masterListView">
+			<h2>Master List</h2>
+			<table>
+				<thead>
+					<tr>
+						<th class="name">Name</th>
+						<th class="type">Type</th>
+						<th class="page">Page</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="m in monsterList | filter : search | alignmentFilter : alignment | tagFilter : tagInput">
+						<td>
+							<b>{{m.name}}</b>
+							<br/>
+							CR: {{m.CR}} ({{m.XP}} XP)
+							<br/>
+							<span class="button load" ng-click="region.AddMonster(m.GetStringified())">Add to region</span>
+						</td>
+						<td>
+							{{m.size}}
+							<span title="{{m.GetTypeText()}}">{{m.type}}</span>
+							<span title="{{m.alignment}}">({{m.GetAlignmentAbbrev()}})</span>
+						</td>
+						<td>{{m.page}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class="expanded overflow" ng-if="masterListView">
+			<h2>Master List</h2>
+			<table>
+				<thead>
+					<tr>
+						<th class="name">Name</th>
+						<th class="size">Size</th>
+						<th class="type">Type</th>
+						<th class="type">Tags</th>
+						<th class="alignment">Alignment</th>
+						<th class="cr">CR (XP)</th>
+						<th class="page">Page</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="m in monsterList | filter : search | alignmentFilter : alignment | tagFilter : tagInput">
+						<td>{{m.name}}</td>
+						<td>{{m.size}}</td>
+						<td>{{m.type}}</td>
+						<td>{{m.tags}}</td>
+						<td>{{m.alignment}}</td>
+						<td>{{m.CR}} ({{m.XP}})</td>
+						<td>{{m.page}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	
+	<div class="container" ng-hide="masterListView">
+		<div class="collapsed overflow">
+			<h2>Stash - {{stashView}}</h2>
+			
+			<div class="multibuttonContainer">
+				<span ng-click="stashView='Region'; saveName=''">Region</span>
+				<span ng-click="stashView='Party'; saveName=''">Party</span>
+				<span ng-click="stashView='Encounter'; saveName=''">Encounter</span>
+			</div>
+			
+			<br/>
+			
+			<div class="multibuttonContainer">
+				<span class="add" ng-click="save()">Save</span>
+				<input ng-model="saveName" placeholder="Save name" style="flex:2 2 0">
+			</div>
+			
+			<br/>
+			
+			<table class="stashTable">
+				<tr ng-repeat="name in stashNames[stashView]">
+					<td class="name">{{name}}</td>
+					<td class="load button" ng-click="load(name)">Load</td>
+					<td class="remove button" ng-click="remove(name)">Delete</td>
+				</tr>
+			</table>
+			
+		</div>
+		
+		<div class="collapsed overflow">
+			<h2>Region - {{region.GetName()}}</h2>
+			<div class="multibuttonContainer">
+				<span class="button load" ng-click="region.Lock('Unlock')">Unlock</span>
+				<span class="button remove" ng-click="region.Lock('Lock')">Lock</span>
+			</div>
+			
+			<table>
+				<thead>
+					<tr>
+						<th class="name">Name</th>
+						<th class="type">Type</th>
+						<th class="page">Page</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="m in region.monsters track by $index">
+						<td>
+							<b>{{m.name}}</b>
+							<br/>
+							CR: {{m.CR}} ({{m.XP}} XP)
+							<br/>
+							<div class="multibuttonContainer">
+								<span class="button remove" ng-click="region.RemoveMonster(m.id)">Remove</span>
+								<span class="button load" ng-click="region.encounter.AddMonster(m)">Encounter</span>
+							</div>
+						</td>
+						<td>
+							{{m.size}}
+							<span title="{{m.GetTypeText()}}">{{m.type}}</span>
+							<span title="{{m.alignment}}">({{m.GetAlignmentAbbrev()}})</span>
+						</td>
+						<td>{{m.page}}</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<div class="multibuttonContainer">
+				<span class="button remove" ng-click="region.Clear()">Clear</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="container" ng-hide="masterListView">
+		<div class="collapsed overflow">
+			<h2>Party</h2>
+			
+			<table>
+				<thead>
+					<tr>
+						<th>Player</th>
+						<th>Character</th>
+						<th>Level</th>
+						<th>Add/Update</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><input type="text" ng-model="newCharacter.playerName" placeholder="Player name"></td>
+						<td><input type="text" ng-model="newCharacter.characterName" placeholder="Character name"></td>
+						<td><input type="number" min=1 max=20 ng-model="newCharacter.level" placeholder="Level"></td>
+						<td><span class="button add" ng-click="region.encounter.AddCharacter(newCharacter)">Add/Update</span></td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<table>
+				<thead>
+					<tr>
+						<th>Player</th>
+						<th>Character</th>
+						<th>Level</th>
+						<th>Update/Remove</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="p in region.encounter.party">
+						<td>{{p.playerName}}</td>
+						<td>{{p.characterName}}</td>
+						<td>{{p.level}}</td>
+						<td>
+							<div class="multibuttonContainer">
+								<span class="button load" ng-click="PopulatePlayerInput(p)">Update</span>
+								<span class="button remove" ng-click="region.encounter.RemoveCharacter($index)">Remove</span>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class="collapsed overflow">
+			<h2>Encounter</h2>
+			
+			<div>
+				<b>Difficulty</b>: {{region.encounter.GetDifficulty()}}
+				<br/>
+				<b>Total XP</b>: {{region.encounter.GetXPSum()}}
+				<b>XP per character</b>: {{region.encounter.GetXPPerCharacter()}}
+			</div>
+			
+			<table>
+				<thead>
+					<tr>
+						<th class="name">Name</th>
+						<th class="type">Type</th>
+						<th class="page">Page</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="m in region.encounter.monsters track by $index">
+						<td>
+							<b>{{m.name}}</b>
+							<br/>
+							CR: {{m.CR}} ({{m.XP}} XP)
+							<br/>
+							<span class="button remove" ng-click="region.encounter.RemoveMonster($index)">Remove</span>
+						</td>
+						<td>
+							{{m.size}}
+							<span title="{{m.GetTypeText()}}">{{m.type}}</span>
+							<span title="{{m.alignment}}">({{m.GetAlignmentAbbrev()}})</span>
+						</td>
+						<td>{{m.page}}</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<div class="multibuttonContainer">
+				<span class="button remove" ng-click="region.encounter.Clear()">Clear</span>
+			</div>
+		</div>
+	</div>
+	
+</body>
+
+</html>

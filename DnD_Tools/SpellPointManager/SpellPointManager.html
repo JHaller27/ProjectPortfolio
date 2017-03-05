@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>D&amp;D 5e Spell Point Manager</title>
+	
+	<script src="../lib/angular.js"></script>
+	<script src="./scripts.js"></script>
+	<link rel="stylesheet" type="text/css" href="./styles.css">
+</head>
+
+<body ng-app="myApp" ng-controller="myCtrl">
+
+	<table id="classLevelTable">
+		<thead>
+			<tr>
+				<th ng-repeat="c in classes">{{c["name"]}}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="classLevelCell" ng-repeat="c in classes" style="width:{{	100 / classes.length}}%">
+					<div class="add clicky" ng-click="AddLevel(c)">+</div>
+					<div class="read">{{levels[c["name"]]["level"]}}</div>
+					<div class="subtract clicky" ng-click="SubtractLevel(c)">-</div>
+					<div class="reset clicky" ng-click="ResetLevels(c)">Reset</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<div class="reset clicky" ng-click="ResetLevels()">Reset All</div>
+	<h2><span class="label">Character Level:</span> {{GetCharacterLevel()}}</h2>
+
+	<hr/>
+
+	<table id="spellSlotTable">
+		<thead>
+			<tr>
+				<th class="tableTitle" colspan={{maxSpellLevel+1}}>Spell Slots per Spell Level</th>
+			</tr>
+			<tr>
+				<th class="rowHeading">Spell level</th>
+				<th class="columnHeading" ng-repeat="x in range">{{GetOrdinal(x)}}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th class="rowHeading">Max Spell Slots</th>
+				<td ng-repeat="x in range">{{maxSlots[x - 1]}}</td>
+			</tr>
+			<tr>
+				<th class="rowHeading">Points per slot</th>
+				<td ng-repeat="x in range">{{conversion[x - 1]}}</td>
+			</tr>
+			<tr>
+				<th class="rowHeading">Cast Spell</th>
+				<td class="cast clicky" ng-repeat="x in range" ng-click="CastSpell(x);">Cast</td>
+			</tr>
+			<tr>
+				<th class="rowHeading">Regain Spell</th>
+				<td class="cast clicky" ng-repeat="x in range" ng-click="RegainSpell(x);">Regain</td>
+			</tr>
+			<tr>
+				<td class="clicky" colspan={{maxSpellLevel+1}} ng-click="ResetSlots()">Regain all slots</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<hr/>
+	
+	<h2><span class="label">Maximum Spell Points:</span> {{GetMaxSpellPoints()}}</h2>
+	<h2><span class="label">Current Spell Points:</span> {{GetSpellPoints()}}</h2>
+	
+</body>
+
+</html>
