@@ -1,0 +1,39 @@
+Board
+-----
+ - public static final int VERTICAL = 0
+ - public static final int HORIZONTAL = 1
+
+ - Board()
+ - boolean isValid (int yIn, int xIn)
+ - boolean isEmpty (Space sp, int dir, int dist)
+ - boolean addShip (int index, Space sp, int dir)
+ - Ship get (int y, int x)
+ - Ship getFromFleet (int index)
+ - boolean attack (int y, int x)
+ - String toString ()
+
+
+Space
+-----
+ - Space (int yIn, int xIn)
+ - Ship reveal ()
+ - void add (Ship s)
+ - Ship get ()
+ - boolean revealed ()
+ - String toString ()
+
+
+Ship
+----
+ - static final Ship PATROLBOAT
+ - static final Ship SUBMARINE
+ - static final Ship DESTROYER
+ - static final Ship BATTLESHIP
+ - static final Ship AIRCRAFTCARRIER
+
+ - Ship (String str, int sizeIn)
+ - void setDir (int in)
+ - int getDir ()
+ - int getSize ()
+ - String getLetter ()
+ - String toString ()
